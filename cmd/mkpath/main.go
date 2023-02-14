@@ -1,20 +1,37 @@
 package main
 
-import "github.com/alexflint/go-arg"
+import (
+	"fmt"
+	"os"
+	"strconv"
+
+	"github.com/alexflint/go-arg"
+)
 
 func main() {
 	var args ProgramArgs
 
 	arg.MustParse(&args)
-	// path := "./new_directory"
-	// if _, err := os.Stat(path); os.IsNotExist(err) {
-	// 	err = os.MkdirAll(path, 0755)
-	// 	if err != nil {
-	// 		fmt.Println(err)
-	// 	} else {
-	// 		fmt.Println("Directory created successfully.")
-	// 	}
-	// } else {
-	// 	fmt.Println("Directory already exists.")
-	// }
+	permission, err := strconv.ParseUint(args.Permission, 8, 16)
+
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		makeDirectoryPath(args.Path, permission)
+	}
+}
+
+func makeDirectoryPath(path string, permission uint64) {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		err = os.MkdirAll(path, os.FileMode(permission))
+
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println("Directories created successfully.")
+		}
+	} else {
+		fmt.Println("Directory already exists.")
+	}
+
 }
